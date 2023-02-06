@@ -1,2 +1,6 @@
-# DATA441
-Coursework from William &amp; Mary Advanced Machine Learning course (2023).
+# Intro to Locally Weighted Regression
+
+1. Theory and math
+2. Kernel Functions
+3. Ways of coding function
+4. Plots
