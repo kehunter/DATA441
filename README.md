@@ -5,5 +5,5 @@
 3. Ways of coding function
 4. Plots
 
-![]([image.png](https://miro.medium.com/max/1400/1*H3QS05Q1GJtY-tiBL00iug.webp))
+![](https://miro.medium.com/max/1400/1*H3QS05Q1GJtY-tiBL00iug.webp)
 Image credit to Suraj Verma.
