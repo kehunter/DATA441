@@ -147,7 +147,71 @@ def kernel_function(xi,x0,kern, tau):
     return kern((xi - x0)/(2*tau))
 ```
 
+Since we are going to be generating regression lines from 
+multiple point, our weights will take the form of a weights 
+matrix, where each column vector represents the weights 
+calculated based on a given point: 
+
+```
+# x is our vector of observations, 
+# x_new are the points that we want to predict
+def weights_matrix(x,x_new,kern,tau):
+  if np.isscalar(x_new): # if you input a scaler
+    return kernel_function(x,x_new,kern,tau)
+  else: 
+    n = len(x_new)
+    # generate a vector of weights centered at each new value
+    return np.array([kernel_function(x,x_new[i],kern,tau) for i in range(n)]) 
+
+```
+
+Here is our basic LOWESS function:
+
+```
+# this function is designed to be trained by one set of data, 
+# and to predict another
+
+# you are centering the kernel at the new data and producing
+# weights based on the old data
+
+# so if you have 10 data points, you solve 10 linreg problems and
+# create 10 predictions
+
+def lowess(x, y,x_new, kern, tau=0.05): # x_new should be the testing data
+    # tau is called bandwidth K((x-x[i])/(2*tau))
+    # tau is a hyper-parameter
+    w = weights_matrix(x,x_new,kern,tau) 
+    if np.isscalar(x_new):
+      lm.fit(np.diag(w).dot(x.reshape(-1,1)),np.diag(w).dot(y.reshape(-1,1)))
+      yest = lm.predict([[x_new]])[0][0]
+    else:
+      # if it is not a scaler, then you get n predictions & n weights
+      n = len(x_new)
+      yest = np.zeros(n)
+      #Looping through all x-points
+      for i in range(n):
+        # solve n linear regressions
+        lm.fit(np.diag(w[i,:]).dot(x.reshape(-1,1)),np.diag(w[i,:]).dot(y.reshape(-1,1)))
+        yest[i] = lm.predict(x_new[i].reshape(-1,1)) 
+
+    return yest
+```
 
 
-![Image credit to Suraj Verma.](https://miro.medium.com/max/1400/1*H3QS05Q1GJtY-tiBL00iug.webp)
+### Example 
+Using randomly-generated noisy sin data, we can test our function and generate
+the following plot: 
+
+![](plot.png)
+
+
+
+
+
+
+
+
+<!--- ![Image credit to Suraj Verma.](https://miro.medium.com/max/1400/1*H3QS05Q1GJtY-tiBL00iug.webp)  ---> 
+
+
 
