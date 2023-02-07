@@ -41,9 +41,9 @@ $$\large \hat{y} = X(X^TX)^{-1}(X^Ty)$$
 Linear regression can be a great method for modeling and predicting linear data, but 
 it cannot directly be applied to non-linear trends, like in the image below:
 
-![](https://beginningwithml.files.wordpress.com/2018/07/2-e1530546876638.png)
+![Image credit to Rahul Yedida (2018). ](https://beginningwithml.files.wordpress.com/2018/07/2-e1530546876638.png)
 
-Image credit to Rahul Yedida (2018). 
+
 
 ### "Locally"
 
@@ -54,9 +54,9 @@ This calculus-like approach approximates the true curve of the line with multipl
 linear models. This way, when you are making a prediction for a new observation, you can 
 localize the problem to a smaller neighborhood of the data: 
 
-![](https://beginningwithml.files.wordpress.com/2018/07/3.png)
+![Image credit to Rahul Yedida (2018).](https://beginningwithml.files.wordpress.com/2018/07/3.png)
 
-Image credit to Rahul Yedida (2018).
+
 
 ### "Weighted" 
 
@@ -68,10 +68,12 @@ us a matrix of weights.
 
 The kernel width is defined by a hyperparameter called tau, $\tau$:
 
+![Image credit to David Cohn](https://www.cs.cmu.edu/afs/cs/project/jair/pub/volume4/cohn96a-html/img160.gif)
+
 1. Theory and math
 2. Kernel Functions
 3. Ways of coding function
 4. Plots
 
-![](https://miro.medium.com/max/1400/1*H3QS05Q1GJtY-tiBL00iug.webp)
-Image credit to Suraj Verma.
+![Image credit to Suraj Verma.](https://miro.medium.com/max/1400/1*H3QS05Q1GJtY-tiBL00iug.webp)
+
