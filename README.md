@@ -70,10 +70,37 @@ The kernel width is defined by a hyperparameter called tau, $\tau$:
 
 ![Image credit to David Cohn](https://www.cs.cmu.edu/afs/cs/project/jair/pub/volume4/cohn96a-html/img160.gif)
 
-1. Theory and math
-2. Kernel Functions
-3. Ways of coding function
-4. Plots
+Here are some examples of kernel functions that may be used:
+
+1.   The Exponential Kernel
+
+$$ K(x):= e^{-\frac{\|x\|^2}{2\tau}}$$
+
+
+2.   The Tricubic Kernel
+
+$$ K(x):=\begin{cases}
+(1-\|x\|^3)^3 \;\;\;if \;\;\; \|x\|<1 \\
+0 \;\;\; \text{otherwise}
+\end{cases}
+$$
+
+3.   The Epanechnikov Kernel
+
+$$ K(x):=\begin{cases}
+\frac{3}{4}(1-\|x\|^2) \;\;\;if \;\;\; \|x\|<1 \\
+0 \;\;\; \text{otherwise}
+\end{cases}
+$$
+
+3.   The Quartic Kernel
+
+$$ K(x):=\begin{cases}
+\frac{15}{16}(1-\|x\|^2)^2 \;\;\;if \;\;\; \|x\|<1 \\
+0 \;\;\; \text{otherwise}
+\end{cases}
+$$
+
 
 ![Image credit to Suraj Verma.](https://miro.medium.com/max/1400/1*H3QS05Q1GJtY-tiBL00iug.webp)
 
