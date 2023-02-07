@@ -102,5 +102,52 @@ $$ K(x):=\begin{cases}
 $$
 
 
+## Code implementations
+
+It is first necessary to import some packages: 
+
+```
+import numpy as np
+import pandas as pd
+from math import ceil
+from scipy import linalg
+from scipy.interpolate import interp1d
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.linear_model import LinearRegression
+import scipy.stats as stats
+from sklearn.model_selection import train_test_split as tts, KFold
+from sklearn.metrics import mean_squared_error as mse
+```
+
+Create a general linear regression model:
+
+```
+lm = LinearRegression()
+```
+
+Define the kernels: 
+
+```
+# Tricubic Kernel
+def tricubic(x):
+  return np.where(np.abs(x)>1,0,70/81*(1-np.abs(x)**3)**3)
+  
+# Epanechnikov Kernel
+def Epanechnikov(x):
+  return np.where(np.abs(x)>1,0,3/4*(1-np.abs(x)**2)) 
+  
+# Quartic Kernel
+def Quartic(x):
+  return np.where(np.abs(x)>1,0,15/16*(1-np.abs(x)**2)**2) 
+```
+
+Define the general kernel function: 
+```
+def kernel_function(xi,x0,kern, tau): 
+    return kern((xi - x0)/(2*tau))
+```
+
+
+
 ![Image credit to Suraj Verma.](https://miro.medium.com/max/1400/1*H3QS05Q1GJtY-tiBL00iug.webp)
 
