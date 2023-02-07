@@ -58,6 +58,16 @@ localize the problem to a smaller neighborhood of the data:
 
 Image credit to Rahul Yedida (2018).
 
+### "Weighted" 
+
+So how do we localize the data? We use what is known as a **kernel function** which assigns each
+data point a **weight** based on how far that point is from a central point. The kernel looks like 
+a bell-shaped curve, so that points that fall outside of the scope of the kernel receive a value of 0.
+For LOWESS, each point that we are trying to predict will be the center point for the kernel, giving
+us a matrix of weights. 
+
+The kernel width is defined by a hyperparameter called tau, $\tau$:
+
 1. Theory and math
 2. Kernel Functions
 3. Ways of coding function
