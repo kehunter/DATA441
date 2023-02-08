@@ -218,18 +218,6 @@ class Lowess:
         kernel = self.kernel
         tau = self.tau
 
-        ## THIS PART SHOULD APPEAR IN PREDICTION: 
-        # w = weights_matrix(x,x,kernel,tau) 
-        # if np.isscalar(x):
-        #   lm.fit(np.diag(w).dot(x.reshape(-1,1)),np.diag(w).dot(y.reshape(-1,1)))
-        #   yest = lm.predict([[x]])[0][0]
-        # else:
-        #   n = len(x)
-        #   yest = np.zeros(n)
-        #   #Looping through all x-points
-        #   for i in range(n):
-        #     lm.fit(np.diag(w[i,:]).dot(x.reshape(-1,1)),np.diag(w[i,:]).dot(y.reshape(-1,1)))
-        #     yest[i] = lm.predict(x[i].reshape(-1,1)) 
         self.xtrain_ = x
         self.yhat_ = y
 
