@@ -1,0 +1,286 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome file</title>
+  <link rel="stylesheet" href="https://stackedit.io/style.css" />
+</head>
+
+<body class="stackedit">
+  <div class="stackedit__html"><h1 id="intro-to-locally-weighted-linear-regression">Intro to Locally Weighted Linear Regression</h1>
+<h2 id="what-is-locally-weighted-linear-regression">What is Locally Weighted Linear Regression?</h2>
+<h3 id="linear-regression">“Linear Regression”</h3>
+<p>Linear regression is a modeling technique that uses linear combinations of the</p>
+<p>input data to give a prediction of the dependent variable’s value for a given point.</p>
+<p>The general form of the equation that defines a linear regression model is as follows:</p>
+<p><span class="katex--display"><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mstyle mathsize="1.2em"><mi>y</mi><mo>=</mo><mi>X</mi><mo>⋅</mo><mi>β</mi><mo>+</mo><mi>σ</mi><mi>ϵ</mi></mstyle></mrow><annotation encoding="application/x-tex">\large y = X\cdot\beta +\sigma\epsilon  </annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.75em; vertical-align: -0.233328em;"></span><span class="mord mathnormal sizing reset-size6 size7" style="margin-right: 0.03588em;">y</span><span class="mspace" style="margin-right: 0.277778em;"></span><span class="mrel sizing reset-size6 size7">=</span><span class="mspace" style="margin-right: 0.277778em;"></span></span><span class="base"><span class="strut" style="height: 0.819996em; vertical-align: 0em;"></span><span class="mord mathnormal sizing reset-size6 size7" style="margin-right: 0.07847em;">X</span><span class="mspace" style="margin-right: 0.222222em;"></span><span class="mbin sizing reset-size6 size7">⋅</span><span class="mspace" style="margin-right: 0.222222em;"></span></span><span class="base"><span class="strut" style="height: 1.06666em; vertical-align: -0.233328em;"></span><span class="mord mathnormal sizing reset-size6 size7" style="margin-right: 0.05278em;">β</span><span class="mspace" style="margin-right: 0.222222em;"></span><span class="mbin sizing reset-size6 size7">+</span><span class="mspace" style="margin-right: 0.222222em;"></span></span><span class="base"><span class="strut" style="height: 0.516672em; vertical-align: 0em;"></span><span class="mord mathnormal sizing reset-size6 size7" style="margin-right: 0.03588em;">σ</span><span class="mord mathnormal sizing reset-size6 size7">ϵ</span></span></span></span></span></span></p>
+<p>where</p>
+<ul>
+<li>
+<p><span class="katex--inline"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>y</mi><mo>→</mo></mrow><annotation encoding="application/x-tex">y \rightarrow</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.625em; vertical-align: -0.19444em;"></span><span class="mord mathnormal" style="margin-right: 0.03588em;">y</span><span class="mspace" style="margin-right: 0.277778em;"></span><span class="mrel">→</span></span></span></span></span> vector of the dependent variable values</p>
+</li>
+<li>
+<p><span class="katex--inline"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>X</mi><mo>→</mo></mrow><annotation encoding="application/x-tex">X \rightarrow</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.68333em; vertical-align: 0em;"></span><span class="mord mathnormal" style="margin-right: 0.07847em;">X</span><span class="mspace" style="margin-right: 0.277778em;"></span><span class="mrel">→</span></span></span></span></span> matrix of observations</p>
+</li>
+<li>
+<p><span class="katex--inline"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>β</mi><mo>→</mo></mrow><annotation encoding="application/x-tex">\beta  \rightarrow</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.88888em; vertical-align: -0.19444em;"></span><span class="mord mathnormal" style="margin-right: 0.05278em;">β</span><span class="mspace" style="margin-right: 0.277778em;"></span><span class="mrel">→</span></span></span></span></span> a vector of coefficients calculated by minimizing the SSE of the observed y values</p>
+</li>
+</ul>
+<p>from the predicted y values</p>
+<ul>
+<li><span class="katex--inline"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ϵ</mi><mo>→</mo></mrow><annotation encoding="application/x-tex">\epsilon  \rightarrow</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.43056em; vertical-align: 0em;"></span><span class="mord mathnormal">ϵ</span><span class="mspace" style="margin-right: 0.277778em;"></span><span class="mrel">→</span></span></span></span></span> random error</li>
+</ul>
+<p>In order to calculate the <span class="katex--inline"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>β</mi></mrow><annotation encoding="application/x-tex">\beta</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.88888em; vertical-align: -0.19444em;"></span><span class="mord mathnormal" style="margin-right: 0.05278em;">β</span></span></span></span></span> coefficients, we must solve for <span class="katex--inline"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>β</mi></mrow><annotation encoding="application/x-tex">\beta</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.88888em; vertical-align: -0.19444em;"></span><span class="mord mathnormal" style="margin-right: 0.05278em;">β</span></span></span></span></span>. To get our</p>
+<p>matrix of features on the other side of the equation, we will have to multiply by its</p>
+<p>inverse which is only possible if the matrix is invertible, and necessarily square.</p>
+<p>Multiplying X by its transpose will make it into a (likely) invertible square matrix:</p>
+<p><span class="katex--display"><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mstyle mathsize="1.2em"><msup><mi>X</mi><mi>T</mi></msup><mi>y</mi><mo>=</mo><msup><mi>X</mi><mi>T</mi></msup><mi>X</mi><mi>β</mi><mo>+</mo><mi>σ</mi><msup><mi>X</mi><mi>T</mi></msup><mi>ϵ</mi></mstyle></mrow><annotation encoding="application/x-tex">\large X^Ty = X^TX\beta +\sigma X^T\epsilon</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 1.27559em; vertical-align: -0.233328em;"></span><span class="mord sizing reset-size6 size7"><span class="mord mathnormal" style="margin-right: 0.07847em;">X</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height: 0.868553em;"><span class="" style="top: -3.213em; margin-right: 0.0416667em;"><span class="pstrut" style="height: 2.8em;"></span><span class="sizing reset-size7 size4 mtight"><span class="mord mathnormal mtight" style="margin-right: 0.13889em;">T</span></span></span></span></span></span></span></span><span class="mord mathnormal sizing reset-size6 size7" style="margin-right: 0.03588em;">y</span><span class="mspace" style="margin-right: 0.277778em;"></span><span class="mrel sizing reset-size6 size7">=</span><span class="mspace" style="margin-right: 0.277778em;"></span></span><span class="base"><span class="strut" style="height: 1.27559em; vertical-align: -0.233328em;"></span><span class="mord sizing reset-size6 size7"><span class="mord mathnormal" style="margin-right: 0.07847em;">X</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height: 0.868553em;"><span class="" style="top: -3.213em; margin-right: 0.0416667em;"><span class="pstrut" style="height: 2.8em;"></span><span class="sizing reset-size7 size4 mtight"><span class="mord mathnormal mtight" style="margin-right: 0.13889em;">T</span></span></span></span></span></span></span></span><span class="mord mathnormal sizing reset-size6 size7" style="margin-right: 0.05278em;">Xβ</span><span class="mspace" style="margin-right: 0.222222em;"></span><span class="mbin sizing reset-size6 size7">+</span><span class="mspace" style="margin-right: 0.222222em;"></span></span><span class="base"><span class="strut" style="height: 1.04226em; vertical-align: 0em;"></span><span class="mord mathnormal sizing reset-size6 size7" style="margin-right: 0.03588em;">σ</span><span class="mord sizing reset-size6 size7"><span class="mord mathnormal" style="margin-right: 0.07847em;">X</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height: 0.868553em;"><span class="" style="top: -3.213em; margin-right: 0.0416667em;"><span class="pstrut" style="height: 2.8em;"></span><span class="sizing reset-size7 size4 mtight"><span class="mord mathnormal mtight" style="margin-right: 0.13889em;">T</span></span></span></span></span></span></span></span><span class="mord mathnormal sizing reset-size6 size7">ϵ</span></span></span></span></span></span></p>
+<p>And after checking that <span class="katex--inline"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>X</mi><mi>T</mi></msup><mi>X</mi></mrow><annotation encoding="application/x-tex">X^TX</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.841331em; vertical-align: 0em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right: 0.07847em;">X</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height: 0.841331em;"><span class="" style="top: -3.063em; margin-right: 0.05em;"><span class="pstrut" style="height: 2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right: 0.13889em;">T</span></span></span></span></span></span></span></span><span class="mord mathnormal" style="margin-right: 0.07847em;">X</span></span></span></span></span> is invertible, we can solve for <span class="katex--inline"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>β</mi></mrow><annotation encoding="application/x-tex">\beta</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.88888em; vertical-align: -0.19444em;"></span><span class="mord mathnormal" style="margin-right: 0.05278em;">β</span></span></span></span></span>:</p>
+<p><span class="katex--display"><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mstyle mathsize="1.2em"><mi>β</mi><mo>=</mo><mo stretchy="false">(</mo><msup><mi>X</mi><mi>T</mi></msup><mi>X</mi><msup><mo stretchy="false">)</mo><mrow><mo>−</mo><mn>1</mn></mrow></msup><mo stretchy="false">(</mo><msup><mi>X</mi><mi>T</mi></msup><mi>y</mi><mo stretchy="false">)</mo><mo>−</mo><mi>σ</mi><mo stretchy="false">(</mo><msup><mi>X</mi><mi>T</mi></msup><mi>X</mi><msup><mo stretchy="false">)</mo><mrow><mo>−</mo><mn>1</mn></mrow></msup><msup><mi>X</mi><mi>T</mi></msup><mi>ϵ</mi></mstyle></mrow><annotation encoding="application/x-tex">\large  \beta = (X^TX)^{-1}(X^Ty) - \sigma (X^TX)^{-1}X^T\epsilon</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 1.06666em; vertical-align: -0.233328em;"></span><span class="mord mathnormal sizing reset-size6 size7" style="margin-right: 0.05278em;">β</span><span class="mspace" style="margin-right: 0.277778em;"></span><span class="mrel sizing reset-size6 size7">=</span><span class="mspace" style="margin-right: 0.277778em;"></span></span><span class="base"><span class="strut" style="height: 1.34226em; vertical-align: -0.3em;"></span><span class="mopen sizing reset-size6 size7">(</span><span class="mord sizing reset-size6 size7"><span class="mord mathnormal" style="margin-right: 0.07847em;">X</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height: 0.868553em;"><span class="" style="top: -3.213em; margin-right: 0.0416667em;"><span class="pstrut" style="height: 2.8em;"></span><span class="sizing reset-size7 size4 mtight"><span class="mord mathnormal mtight" style="margin-right: 0.13889em;">T</span></span></span></span></span></span></span></span><span class="mord mathnormal sizing reset-size6 size7" style="margin-right: 0.07847em;">X</span><span class="mclose sizing reset-size6 size7"><span class="mclose">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height: 0.842627em;"><span class="" style="top: -3.213em; margin-right: 0.0416667em;"><span class="pstrut" style="height: 2.8em;"></span><span class="sizing reset-size7 size4 mtight"><span class="mord mtight"><span class="mord mtight">−</span><span class="mord mtight">1</span></span></span></span></span></span></span></span></span><span class="mopen sizing reset-size6 size7">(</span><span class="mord sizing reset-size6 size7"><span class="mord mathnormal" style="margin-right: 0.07847em;">X</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height: 0.868553em;"><span class="" style="top: -3.213em; margin-right: 0.0416667em;"><span class="pstrut" style="height: 2.8em;"></span><span class="sizing reset-size7 size4 mtight"><span class="mord mathnormal mtight" style="margin-right: 0.13889em;">T</span></span></span></span></span></span></span></span><span class="mord mathnormal sizing reset-size6 size7" style="margin-right: 0.03588em;">y</span><span class="mclose sizing reset-size6 size7">)</span><span class="mspace" style="margin-right: 0.222222em;"></span><span class="mbin sizing reset-size6 size7">−</span><span class="mspace" style="margin-right: 0.222222em;"></span></span><span class="base"><span class="strut" style="height: 1.34226em; vertical-align: -0.3em;"></span><span class="mord mathnormal sizing reset-size6 size7" style="margin-right: 0.03588em;">σ</span><span class="mopen sizing reset-size6 size7">(</span><span class="mord sizing reset-size6 size7"><span class="mord mathnormal" style="margin-right: 0.07847em;">X</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height: 0.868553em;"><span class="" style="top: -3.213em; margin-right: 0.0416667em;"><span class="pstrut" style="height: 2.8em;"></span><span class="sizing reset-size7 size4 mtight"><span class="mord mathnormal mtight" style="margin-right: 0.13889em;">T</span></span></span></span></span></span></span></span><span class="mord mathnormal sizing reset-size6 size7" style="margin-right: 0.07847em;">X</span><span class="mclose sizing reset-size6 size7"><span class="mclose">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height: 0.842627em;"><span class="" style="top: -3.213em; margin-right: 0.0416667em;"><span class="pstrut" style="height: 2.8em;"></span><span class="sizing reset-size7 size4 mtight"><span class="mord mtight"><span class="mord mtight">−</span><span class="mord mtight">1</span></span></span></span></span></span></span></span></span><span class="mord sizing reset-size6 size7"><span class="mord mathnormal" style="margin-right: 0.07847em;">X</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height: 0.868553em;"><span class="" style="top: -3.213em; margin-right: 0.0416667em;"><span class="pstrut" style="height: 2.8em;"></span><span class="sizing reset-size7 size4 mtight"><span class="mord mathnormal mtight" style="margin-right: 0.13889em;">T</span></span></span></span></span></span></span></span><span class="mord mathnormal sizing reset-size6 size7">ϵ</span></span></span></span></span></span></p>
+<p>We can never truly know the random error term, so we take an estimate:</p>
+<p><span class="katex--display"><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mstyle mathsize="1.2em"><mover accent="true"><mi>β</mi><mo>ˉ</mo></mover><mo>=</mo><mo stretchy="false">(</mo><msup><mi>X</mi><mi>T</mi></msup><mi>X</mi><msup><mo stretchy="false">)</mo><mrow><mo>−</mo><mn>1</mn></mrow></msup><mo stretchy="false">(</mo><msup><mi>X</mi><mi>T</mi></msup><mi>y</mi><mo stretchy="false">)</mo></mstyle></mrow><annotation encoding="application/x-tex">\large  \bar{\beta} = (X^TX)^{-1}(X^Ty)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 1.23079em; vertical-align: -0.233328em;"></span><span class="mord accent sizing reset-size6 size7"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 0.83122em;"><span class="" style="top: -3.2em;"><span class="pstrut" style="height: 3.2em;"></span><span class="mord mathnormal" style="margin-right: 0.05278em;">β</span></span><span class="" style="top: -3.46344em;"><span class="pstrut" style="height: 3.2em;"></span><span class="accent-body" style="left: -0.16666em;"><span class="mord">ˉ</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 0.19444em;"><span class=""></span></span></span></span></span><span class="mspace" style="margin-right: 0.277778em;"></span><span class="mrel sizing reset-size6 size7">=</span><span class="mspace" style="margin-right: 0.277778em;"></span></span><span class="base"><span class="strut" style="height: 1.34226em; vertical-align: -0.3em;"></span><span class="mopen sizing reset-size6 size7">(</span><span class="mord sizing reset-size6 size7"><span class="mord mathnormal" style="margin-right: 0.07847em;">X</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height: 0.868553em;"><span class="" style="top: -3.213em; margin-right: 0.0416667em;"><span class="pstrut" style="height: 2.8em;"></span><span class="sizing reset-size7 size4 mtight"><span class="mord mathnormal mtight" style="margin-right: 0.13889em;">T</span></span></span></span></span></span></span></span><span class="mord mathnormal sizing reset-size6 size7" style="margin-right: 0.07847em;">X</span><span class="mclose sizing reset-size6 size7"><span class="mclose">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height: 0.842627em;"><span class="" style="top: -3.213em; margin-right: 0.0416667em;"><span class="pstrut" style="height: 2.8em;"></span><span class="sizing reset-size7 size4 mtight"><span class="mord mtight"><span class="mord mtight">−</span><span class="mord mtight">1</span></span></span></span></span></span></span></span></span><span class="mopen sizing reset-size6 size7">(</span><span class="mord sizing reset-size6 size7"><span class="mord mathnormal" style="margin-right: 0.07847em;">X</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height: 0.868553em;"><span class="" style="top: -3.213em; margin-right: 0.0416667em;"><span class="pstrut" style="height: 2.8em;"></span><span class="sizing reset-size7 size4 mtight"><span class="mord mathnormal mtight" style="margin-right: 0.13889em;">T</span></span></span></span></span></span></span></span><span class="mord mathnormal sizing reset-size6 size7" style="margin-right: 0.03588em;">y</span><span class="mclose sizing reset-size6 size7">)</span></span></span></span></span></span></p>
+<p>Finally, we can plug in our estimated <span class="katex--inline"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>β</mi></mrow><annotation encoding="application/x-tex">\beta</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.88888em; vertical-align: -0.19444em;"></span><span class="mord mathnormal" style="margin-right: 0.05278em;">β</span></span></span></span></span> coefficients and obtain</p>
+<p>our linear regression equation to use for predictions:</p>
+<p><span class="katex--display"><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mstyle mathsize="1.2em"><mover accent="true"><mi>y</mi><mo>^</mo></mover><mo>=</mo><mi>X</mi><mo stretchy="false">(</mo><msup><mi>X</mi><mi>T</mi></msup><mi>X</mi><msup><mo stretchy="false">)</mo><mrow><mo>−</mo><mn>1</mn></mrow></msup><mo stretchy="false">(</mo><msup><mi>X</mi><mi>T</mi></msup><mi>y</mi><mo stretchy="false">)</mo></mstyle></mrow><annotation encoding="application/x-tex">\large  \hat{y} = X(X^TX)^{-1}(X^Ty)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 1.06666em; vertical-align: -0.233328em;"></span><span class="mord accent sizing reset-size6 size7"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 0.69444em;"><span class="" style="top: -3.2em;"><span class="pstrut" style="height: 3.2em;"></span><span class="mord mathnormal" style="margin-right: 0.03588em;">y</span></span><span class="" style="top: -3.2em;"><span class="pstrut" style="height: 3.2em;"></span><span class="accent-body" style="left: -0.19444em;"><span class="mord">^</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 0.19444em;"><span class=""></span></span></span></span></span><span class="mspace" style="margin-right: 0.277778em;"></span><span class="mrel sizing reset-size6 size7">=</span><span class="mspace" style="margin-right: 0.277778em;"></span></span><span class="base"><span class="strut" style="height: 1.34226em; vertical-align: -0.3em;"></span><span class="mord mathnormal sizing reset-size6 size7" style="margin-right: 0.07847em;">X</span><span class="mopen sizing reset-size6 size7">(</span><span class="mord sizing reset-size6 size7"><span class="mord mathnormal" style="margin-right: 0.07847em;">X</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height: 0.868553em;"><span class="" style="top: -3.213em; margin-right: 0.0416667em;"><span class="pstrut" style="height: 2.8em;"></span><span class="sizing reset-size7 size4 mtight"><span class="mord mathnormal mtight" style="margin-right: 0.13889em;">T</span></span></span></span></span></span></span></span><span class="mord mathnormal sizing reset-size6 size7" style="margin-right: 0.07847em;">X</span><span class="mclose sizing reset-size6 size7"><span class="mclose">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height: 0.842627em;"><span class="" style="top: -3.213em; margin-right: 0.0416667em;"><span class="pstrut" style="height: 2.8em;"></span><span class="sizing reset-size7 size4 mtight"><span class="mord mtight"><span class="mord mtight">−</span><span class="mord mtight">1</span></span></span></span></span></span></span></span></span><span class="mopen sizing reset-size6 size7">(</span><span class="mord sizing reset-size6 size7"><span class="mord mathnormal" style="margin-right: 0.07847em;">X</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height: 0.868553em;"><span class="" style="top: -3.213em; margin-right: 0.0416667em;"><span class="pstrut" style="height: 2.8em;"></span><span class="sizing reset-size7 size4 mtight"><span class="mord mathnormal mtight" style="margin-right: 0.13889em;">T</span></span></span></span></span></span></span></span><span class="mord mathnormal sizing reset-size6 size7" style="margin-right: 0.03588em;">y</span><span class="mclose sizing reset-size6 size7">)</span></span></span></span></span></span></p>
+<p>Linear regression can be a great method for modeling and predicting linear data, but</p>
+<p>it cannot directly be applied to non-linear trends, like in the image below:</p>
+<p><img src="https://beginningwithml.files.wordpress.com/2018/07/2-e1530546876638.png" alt="Image credit to Rahul Yedida (2018). "></p>
+<h3 id="locally">“Locally”</h3>
+<p>If you tried to draw a single line through that data, the predictions would be very poor.</p>
+<p>However, if you break the data up into smaller segments/datasets, you can apply</p>
+<p>linear regression to these miniature datasets and draw a linear regression line for each one.</p>
+<p>This calculus-like approach approximates the true curve of the line with multiple small,</p>
+<p>linear models. This way, when you are making a prediction for a new observation, you can</p>
+<p>localize the problem to a smaller neighborhood of the data:</p>
+<p><img src="https://beginningwithml.files.wordpress.com/2018/07/3.png" alt="Image credit to Rahul Yedida (2018)."></p>
+<h3 id="weighted">“Weighted”</h3>
+<p>So how do we localize the data? We use what is known as a <strong>kernel function</strong> which assigns each</p>
+<p>data point a <strong>weight</strong> based on how far that point is from a central point. The kernel looks like</p>
+<p>a bell-shaped curve, so that points that fall outside of the scope of the kernel receive a value of 0.</p>
+<p>For LOWESS, each point that we are trying to predict will be the center point for the kernel, giving</p>
+<p>us a matrix of weights.</p>
+<p>The kernel width is defined by a hyperparameter called tau, <span class="katex--inline"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>τ</mi></mrow><annotation encoding="application/x-tex">\tau</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.43056em; vertical-align: 0em;"></span><span class="mord mathnormal" style="margin-right: 0.1132em;">τ</span></span></span></span></span>:</p>
+<p><img src="https://www.cs.cmu.edu/afs/cs/project/jair/pub/volume4/cohn96a-html/img160.gif" alt="Image credit to David Cohn"></p>
+<p>Here are some examples of kernel functions that may be used:</p>
+<ol>
+<li>The Exponential Kernel</li>
+</ol>
+<p><span class="katex--display"><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>K</mi><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo><mo>:</mo><mo>=</mo><msup><mi>e</mi><mrow><mo>−</mo><mfrac><mrow><mi mathvariant="normal">∥</mi><mi>x</mi><msup><mi mathvariant="normal">∥</mi><mn>2</mn></msup></mrow><mrow><mn>2</mn><mi>τ</mi></mrow></mfrac></mrow></msup></mrow><annotation encoding="application/x-tex">K(x):= e^{-\frac{\|x\|^2}{2\tau}}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 1em; vertical-align: -0.25em;"></span><span class="mord mathnormal" style="margin-right: 0.07153em;">K</span><span class="mopen">(</span><span class="mord mathnormal">x</span><span class="mclose">)</span><span class="mspace" style="margin-right: 0.277778em;"></span><span class="mrel">:=</span><span class="mspace" style="margin-right: 0.277778em;"></span></span><span class="base"><span class="strut" style="height: 1.28867em; vertical-align: 0em;"></span><span class="mord"><span class="mord mathnormal">e</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height: 1.28867em;"><span class="" style="top: -3.413em; margin-right: 0.05em;"><span class="pstrut" style="height: 3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">−</span><span class="mord mtight"><span class="mopen nulldelimiter sizing reset-size3 size6"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 1.25096em;"><span class="" style="top: -2.656em;"><span class="pstrut" style="height: 3em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight"><span class="mord mtight">2</span><span class="mord mathnormal mtight" style="margin-right: 0.1132em;">τ</span></span></span></span><span class="" style="top: -3.2255em;"><span class="pstrut" style="height: 3em;"></span><span class="frac-line mtight" style="border-bottom-width: 0.049em;"></span></span><span class="" style="top: -3.50207em;"><span class="pstrut" style="height: 3em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight"><span class="mord mtight">∥</span><span class="mord mathnormal mtight">x</span><span class="mord mtight"><span class="mord mtight">∥</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height: 1.04844em;"><span class="" style="top: -3.04844em; margin-right: 0.1em;"><span class="pstrut" style="height: 2.64444em;"></span><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 0.344em;"><span class=""></span></span></span></span></span><span class="mclose nulldelimiter sizing reset-size3 size6"></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></p>
+<ol start="2">
+<li>The Tricubic Kernel</li>
+</ol>
+<p><span class="katex--display"><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>K</mi><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo><mo>:</mo><mo>=</mo><mrow><mo fence="true">{</mo><mtable rowspacing="0.3600em" columnalign="left left" columnspacing="1em"><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mo stretchy="false">(</mo><mn>1</mn><mo>−</mo><mi mathvariant="normal">∥</mi><mi>x</mi><msup><mi mathvariant="normal">∥</mi><mn>3</mn></msup><msup><mo stretchy="false">)</mo><mn>3</mn></msup>      <mi>i</mi><mi>f</mi>      <mi mathvariant="normal">∥</mi><mi>x</mi><mi mathvariant="normal">∥</mi><mo>&lt;</mo><mn>1</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>0</mn>      <mtext>otherwise</mtext></mrow></mstyle></mtd></mtr></mtable></mrow></mrow><annotation encoding="application/x-tex">K(x):=\begin{cases}(1-\|x\|^3)^3 \;\;\;if \;\;\; \|x\|&lt;1 \\
+0 \;\;\; \text{otherwise}\end{cases}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 1em; vertical-align: -0.25em;"></span><span class="mord mathnormal" style="margin-right: 0.07153em;">K</span><span class="mopen">(</span><span class="mord mathnormal">x</span><span class="mclose">)</span><span class="mspace" style="margin-right: 0.277778em;"></span><span class="mrel">:=</span><span class="mspace" style="margin-right: 0.277778em;"></span></span><span class="base"><span class="strut" style="height: 3.00003em; vertical-align: -1.25003em;"></span><span class="minner"><span class="mopen delimcenter" style="top: 0em;"><span class="delimsizing size4">{</span></span><span class="mord"><span class="mtable"><span class="col-align-l"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 1.69em;"><span class="" style="top: -3.69em;"><span class="pstrut" style="height: 3.008em;"></span><span class="mord"><span class="mopen">(</span><span class="mord">1</span><span class="mspace" style="margin-right: 0.222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right: 0.222222em;"></span><span class="mord">∥</span><span class="mord mathnormal">x</span><span class="mord"><span class="mord">∥</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height: 0.814108em;"><span class="" style="top: -3.063em; margin-right: 0.05em;"><span class="pstrut" style="height: 2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">3</span></span></span></span></span></span></span></span><span class="mclose"><span class="mclose">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height: 0.814108em;"><span class="" style="top: -3.063em; margin-right: 0.05em;"><span class="pstrut" style="height: 2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">3</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right: 0.277778em;"></span><span class="mspace" style="margin-right: 0.277778em;"></span><span class="mspace" style="margin-right: 0.277778em;"></span><span class="mord mathnormal">i</span><span class="mord mathnormal" style="margin-right: 0.10764em;">f</span><span class="mspace" style="margin-right: 0.277778em;"></span><span class="mspace" style="margin-right: 0.277778em;"></span><span class="mspace" style="margin-right: 0.277778em;"></span><span class="mord">∥</span><span class="mord mathnormal">x</span><span class="mord">∥</span><span class="mspace" style="margin-right: 0.277778em;"></span><span class="mrel">&lt;</span><span class="mspace" style="margin-right: 0.277778em;"></span><span class="mord">1</span></span></span><span class="" style="top: -2.25em;"><span class="pstrut" style="height: 3.008em;"></span><span class="mord"><span class="mord">0</span><span class="mspace" style="margin-right: 0.277778em;"></span><span class="mspace" style="margin-right: 0.277778em;"></span><span class="mspace" style="margin-right: 0.277778em;"></span><span class="mord text"><span class="mord">otherwise</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 1.19em;"><span class=""></span></span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></span></span></p>
+<ol start="3">
+<li>The Epanechnikov Kernel</li>
+</ol>
+<p><span class="katex--display"><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>K</mi><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo><mo>:</mo><mo>=</mo><mrow><mo fence="true">{</mo><mtable rowspacing="0.3600em" columnalign="left left" columnspacing="1em"><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mfrac><mn>3</mn><mn>4</mn></mfrac><mo stretchy="false">(</mo><mn>1</mn><mo>−</mo><mi mathvariant="normal">∥</mi><mi>x</mi><msup><mi mathvariant="normal">∥</mi><mn>2</mn></msup><mo stretchy="false">)</mo>      <mi>i</mi><mi>f</mi>      <mi mathvariant="normal">∥</mi><mi>x</mi><mi mathvariant="normal">∥</mi><mo>&lt;</mo><mn>1</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>0</mn>      <mtext>otherwise</mtext></mrow></mstyle></mtd></mtr></mtable></mrow></mrow><annotation encoding="application/x-tex"> K(x):=\begin{cases}\frac{3}{4}(1-\|x\|^2) \;\;\;if \;\;\; \|x\|&lt;1 \\0 \;\;\; \text{otherwise}\end{cases}
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 1em; vertical-align: -0.25em;"></span><span class="mord mathnormal" style="margin-right: 0.07153em;">K</span><span class="mopen">(</span><span class="mord mathnormal">x</span><span class="mclose">)</span><span class="mspace" style="margin-right: 0.277778em;"></span><span class="mrel">:=</span><span class="mspace" style="margin-right: 0.277778em;"></span></span><span class="base"><span class="strut" style="height: 3.00003em; vertical-align: -1.25003em;"></span><span class="minner"><span class="mopen delimcenter" style="top: 0em;"><span class="delimsizing size4">{</span></span><span class="mord"><span class="mtable"><span class="col-align-l"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 1.69em;"><span class="" style="top: -3.69em;"><span class="pstrut" style="height: 3.008em;"></span><span class="mord"><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 0.845108em;"><span class="" style="top: -2.655em;"><span class="pstrut" style="height: 3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">4</span></span></span></span><span class="" style="top: -3.23em;"><span class="pstrut" style="height: 3em;"></span><span class="frac-line" style="border-bottom-width: 0.04em;"></span></span><span class="" style="top: -3.394em;"><span class="pstrut" style="height: 3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">3</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 0.345em;"><span class=""></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mopen">(</span><span class="mord">1</span><span class="mspace" style="margin-right: 0.222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right: 0.222222em;"></span><span class="mord">∥</span><span class="mord mathnormal">x</span><span class="mord"><span class="mord">∥</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height: 0.814108em;"><span class="" style="top: -3.063em; margin-right: 0.05em;"><span class="pstrut" style="height: 2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mclose">)</span><span class="mspace" style="margin-right: 0.277778em;"></span><span class="mspace" style="margin-right: 0.277778em;"></span><span class="mspace" style="margin-right: 0.277778em;"></span><span class="mord mathnormal">i</span><span class="mord mathnormal" style="margin-right: 0.10764em;">f</span><span class="mspace" style="margin-right: 0.277778em;"></span><span class="mspace" style="margin-right: 0.277778em;"></span><span class="mspace" style="margin-right: 0.277778em;"></span><span class="mord">∥</span><span class="mord mathnormal">x</span><span class="mord">∥</span><span class="mspace" style="margin-right: 0.277778em;"></span><span class="mrel">&lt;</span><span class="mspace" style="margin-right: 0.277778em;"></span><span class="mord">1</span></span></span><span class="" style="top: -2.25em;"><span class="pstrut" style="height: 3.008em;"></span><span class="mord"><span class="mord">0</span><span class="mspace" style="margin-right: 0.277778em;"></span><span class="mspace" style="margin-right: 0.277778em;"></span><span class="mspace" style="margin-right: 0.277778em;"></span><span class="mord text"><span class="mord">otherwise</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 1.19em;"><span class=""></span></span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></span></span></p>
+<ol start="3">
+<li>The Quartic Kernel</li>
+</ol>
+<p><span class="katex--display"><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>K</mi><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo><mo>:</mo><mo>=</mo><mrow><mo fence="true">{</mo><mtable rowspacing="0.3600em" columnalign="left left" columnspacing="1em"><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mfrac><mn>15</mn><mn>16</mn></mfrac><mo stretchy="false">(</mo><mn>1</mn><mo>−</mo><mi mathvariant="normal">∥</mi><mi>x</mi><msup><mi mathvariant="normal">∥</mi><mn>2</mn></msup><msup><mo stretchy="false">)</mo><mn>2</mn></msup>      <mi>i</mi><mi>f</mi>      <mi mathvariant="normal">∥</mi><mi>x</mi><mi mathvariant="normal">∥</mi><mo>&lt;</mo><mn>1</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>0</mn>      <mtext>otherwise</mtext></mrow></mstyle></mtd></mtr></mtable></mrow></mrow><annotation encoding="application/x-tex"> K(x):=\begin{cases} \frac{15}{16}(1-\|x\|^2)^2 \;\;\;if \;\;\; \|x\|&lt;1 \\0 \;\;\; \text{otherwise}\end{cases}
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 1em; vertical-align: -0.25em;"></span><span class="mord mathnormal" style="margin-right: 0.07153em;">K</span><span class="mopen">(</span><span class="mord mathnormal">x</span><span class="mclose">)</span><span class="mspace" style="margin-right: 0.277778em;"></span><span class="mrel">:=</span><span class="mspace" style="margin-right: 0.277778em;"></span></span><span class="base"><span class="strut" style="height: 3.00003em; vertical-align: -1.25003em;"></span><span class="minner"><span class="mopen delimcenter" style="top: 0em;"><span class="delimsizing size4">{</span></span><span class="mord"><span class="mtable"><span class="col-align-l"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 1.69em;"><span class="" style="top: -3.69em;"><span class="pstrut" style="height: 3.008em;"></span><span class="mord"><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 0.845108em;"><span class="" style="top: -2.655em;"><span class="pstrut" style="height: 3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">16</span></span></span></span><span class="" style="top: -3.23em;"><span class="pstrut" style="height: 3em;"></span><span class="frac-line" style="border-bottom-width: 0.04em;"></span></span><span class="" style="top: -3.394em;"><span class="pstrut" style="height: 3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">15</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 0.345em;"><span class=""></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mopen">(</span><span class="mord">1</span><span class="mspace" style="margin-right: 0.222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right: 0.222222em;"></span><span class="mord">∥</span><span class="mord mathnormal">x</span><span class="mord"><span class="mord">∥</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height: 0.814108em;"><span class="" style="top: -3.063em; margin-right: 0.05em;"><span class="pstrut" style="height: 2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mclose"><span class="mclose">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height: 0.814108em;"><span class="" style="top: -3.063em; margin-right: 0.05em;"><span class="pstrut" style="height: 2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right: 0.277778em;"></span><span class="mspace" style="margin-right: 0.277778em;"></span><span class="mspace" style="margin-right: 0.277778em;"></span><span class="mord mathnormal">i</span><span class="mord mathnormal" style="margin-right: 0.10764em;">f</span><span class="mspace" style="margin-right: 0.277778em;"></span><span class="mspace" style="margin-right: 0.277778em;"></span><span class="mspace" style="margin-right: 0.277778em;"></span><span class="mord">∥</span><span class="mord mathnormal">x</span><span class="mord">∥</span><span class="mspace" style="margin-right: 0.277778em;"></span><span class="mrel">&lt;</span><span class="mspace" style="margin-right: 0.277778em;"></span><span class="mord">1</span></span></span><span class="" style="top: -2.25em;"><span class="pstrut" style="height: 3.008em;"></span><span class="mord"><span class="mord">0</span><span class="mspace" style="margin-right: 0.277778em;"></span><span class="mspace" style="margin-right: 0.277778em;"></span><span class="mspace" style="margin-right: 0.277778em;"></span><span class="mord text"><span class="mord">otherwise</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 1.19em;"><span class=""></span></span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></span></span></p>
+<h2 id="code-implementations">Code implementations</h2>
+<h3 id="import-packages">Import Packages</h3>
+<pre><code>
+import numpy as np
+
+import pandas as pd
+
+from math import ceil
+
+from scipy import linalg
+
+from scipy.interpolate import interp1d
+
+from sklearn.ensemble import RandomForestRegressor
+
+from sklearn.linear_model import LinearRegression
+
+import scipy.stats as stats
+
+from sklearn.model_selection import train_test_split as tts, KFold
+
+from sklearn.metrics import mean_squared_error as mse
+
+</code></pre>
+<h3 id="create-a-general-linear-regression-model">Create a general linear regression model</h3>
+<pre><code>
+lm = LinearRegression()
+
+</code></pre>
+<h3 id="define-the-kernels">Define the kernels</h3>
+<pre><code>
+# Tricubic Kernel
+
+def tricubic(x):
+
+return np.where(np.abs(x)&gt;1,0,70/81*(1-np.abs(x)**3)**3)
+
+# Epanechnikov Kernel
+
+def Epanechnikov(x):
+
+return np.where(np.abs(x)&gt;1,0,3/4*(1-np.abs(x)**2))
+
+# Quartic Kernel
+
+def Quartic(x):
+
+return np.where(np.abs(x)&gt;1,0,15/16*(1-np.abs(x)**2)**2)
+
+</code></pre>
+<h3 id="define-the-general-kernel-function">Define the general kernel function</h3>
+<pre><code>
+def kernel_function(xi,x0,kern, tau):
+
+return kern((xi - x0)/(2*tau))
+
+</code></pre>
+<h3 id="define-the-weights-function">Define the weights function</h3>
+<p>Since we are going to be generating regression lines from</p>
+<p>multiple point, our weights will take the form of a weights</p>
+<p>matrix, where each column vector represents the weights</p>
+<p>calculated based on a given point:</p>
+<pre><code>
+# x is our vector of observations,
+
+# x_new are the points that we want to predict
+
+def weights_matrix(x,x_new,kern,tau):
+
+if np.isscalar(x_new): # if you input a scaler
+
+return kernel_function(x,x_new,kern,tau)
+
+else:
+
+n = len(x_new)
+
+# generate a vector of weights centered at each new value
+
+return np.array([kernel_function(x,x_new[i],kern,tau) for i in range(n)])
+
+  
+
+</code></pre>
+<h3 id="basic-lowess-function">Basic LOWESS function</h3>
+<pre><code>
+  
+
+def lowess(x, y,x_new, kern, tau=0.05): # x_new should be the testing data
+
+# tau is called bandwidth K((x-x[i])/(2*tau))
+
+# tau is a hyper-parameter
+
+w = weights_matrix(x,x_new,kern,tau)
+
+if np.isscalar(x_new):
+
+lm.fit(np.diag(w).dot(x.reshape(-1,1)),np.diag(w).dot(y.reshape(-1,1)))
+
+yest = lm.predict([[x_new]])[0][0]
+
+else:
+
+# if it is not a scaler, then you get n predictions &amp; n weights
+
+n = len(x_new)
+
+yest = np.zeros(n)
+
+#Looping through all x-points
+
+for i in range(n):
+
+# solve n linear regressions
+
+lm.fit(np.diag(w[i,:]).dot(x.reshape(-1,1)),np.diag(w[i,:]).dot(y.reshape(-1,1)))
+
+yest[i] = lm.predict(x_new[i].reshape(-1,1))
+
+  
+
+return yest
+
+</code></pre>
+<p>This function is designed to be trained by one set of data,</p>
+<p>and to predict another. It works by centering the kernel at</p>
+<p>each new data point and producing weights based on the old data,</p>
+<p>creating n weights vectors and n linear regression models</p>
+<p>if there are n new data points.</p>
+<h3 id="example">Example</h3>
+<p>Using randomly-generated noisy sin data, we can test our function and generate</p>
+<p>the following plot:</p>
+<p><img src="plot.png" alt=""></p>
+<h3 id="creating-a-lowess-class">Creating a LOWESS Class</h3>
+<pre><code>
+# creating your own regressor:
+
+class Lowess:
+
+def __init__(self, kernel = Gaussian, tau=0.05):
+
+self.kernel = kernel
+
+self.tau = tau
+
+def fit(self, x, y):
+
+kernel = self.kernel
+
+tau = self.tau
+
+  
+
+self.xtrain_ = x
+
+self.yhat_ = y
+
+  
+
+def predict(self, x_new):
+
+check_is_fitted(self) # make sure that it has fitted data
+
+x = self.xtrain_
+
+y = self.yhat_
+
+  
+
+w = weights_matrix(x,x_new,self.kernel,self.tau)
+
+  
+
+if np.isscalar(x_new):
+
+lm.fit(np.diag(w).dot(x.reshape(-1,1)),np.diag(w).dot(y.reshape(-1,1)))
+
+yest = lm.predict([[x_new]])[0][0]
+
+else:
+
+n = len(x_new)
+
+yest_test = np.zeros(n)
+
+#Looping through all x-points
+
+for i in range(n):
+
+lm.fit(np.diag(w[i,:]).dot(x.reshape(-1,1)),np.diag(w[i,:]).dot(y.reshape(-1,1)))
+
+yest_test[i] = lm.predict(x_new[i].reshape(-1,1))
+
+return yest_test
+
+</code></pre>
+</div>
+</body>
+
+</html>
