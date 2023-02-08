@@ -104,7 +104,7 @@ $$
 
 ## Code implementations
 
-It is first necessary to import some packages: 
+### Import Packages
 
 ```
 import numpy as np
@@ -119,13 +119,13 @@ from sklearn.model_selection import train_test_split as tts, KFold
 from sklearn.metrics import mean_squared_error as mse
 ```
 
-Create a general linear regression model:
+### Create a general linear regression model
 
 ```
 lm = LinearRegression()
 ```
 
-Define the kernels: 
+### Define the kernels
 
 ```
 # Tricubic Kernel
@@ -141,11 +141,13 @@ def Quartic(x):
   return np.where(np.abs(x)>1,0,15/16*(1-np.abs(x)**2)**2) 
 ```
 
-Define the general kernel function: 
+### Define the general kernel function
 ```
 def kernel_function(xi,x0,kern, tau): 
     return kern((xi - x0)/(2*tau))
 ```
+
+### Define the weights function
 
 Since we are going to be generating regression lines from 
 multiple point, our weights will take the form of a weights 
@@ -165,17 +167,9 @@ def weights_matrix(x,x_new,kern,tau):
 
 ```
 
-Here is our basic LOWESS function:
+### Basic LOWESS function
 
 ```
-# this function is designed to be trained by one set of data, 
-# and to predict another
-
-# you are centering the kernel at the new data and producing
-# weights based on the old data
-
-# so if you have 10 data points, you solve 10 linreg problems and
-# create 10 predictions
 
 def lowess(x, y,x_new, kern, tau=0.05): # x_new should be the testing data
     # tau is called bandwidth K((x-x[i])/(2*tau))
@@ -197,6 +191,12 @@ def lowess(x, y,x_new, kern, tau=0.05): # x_new should be the testing data
     return yest
 ```
 
+This function is designed to be trained by one set of data, 
+and to predict another.  It works by centering the kernel at 
+each new data point and producing weights based on the old data, 
+creating n weights vectors and n linear regression models 
+if there are n new data points. 
+
 
 ### Example 
 Using randomly-generated noisy sin data, we can test our function and generate
@@ -205,7 +205,53 @@ the following plot:
 ![](plot.png)
 
 
+### Creating a LOWESS Class
 
+```
+# creating your own regressor:
+class Lowess:
+    def __init__(self, kernel = Gaussian, tau=0.05):
+        self.kernel = kernel
+        self.tau = tau
+    
+    def fit(self, x, y):
+        kernel = self.kernel
+        tau = self.tau
+
+        ## THIS PART SHOULD APPEAR IN PREDICTION: 
+        # w = weights_matrix(x,x,kernel,tau) 
+        # if np.isscalar(x):
+        #   lm.fit(np.diag(w).dot(x.reshape(-1,1)),np.diag(w).dot(y.reshape(-1,1)))
+        #   yest = lm.predict([[x]])[0][0]
+        # else:
+        #   n = len(x)
+        #   yest = np.zeros(n)
+        #   #Looping through all x-points
+        #   for i in range(n):
+        #     lm.fit(np.diag(w[i,:]).dot(x.reshape(-1,1)),np.diag(w[i,:]).dot(y.reshape(-1,1)))
+        #     yest[i] = lm.predict(x[i].reshape(-1,1)) 
+        self.xtrain_ = x
+        self.yhat_ = y
+
+    def predict(self, x_new):
+        check_is_fitted(self) # make sure that it has fitted data
+        x = self.xtrain_
+        y = self.yhat_
+
+        w = weights_matrix(x,x_new,self.kernel,self.tau)
+
+        if np.isscalar(x_new):
+          lm.fit(np.diag(w).dot(x.reshape(-1,1)),np.diag(w).dot(y.reshape(-1,1)))
+          yest = lm.predict([[x_new]])[0][0]
+        else:
+          n = len(x_new)
+          yest_test = np.zeros(n)
+          #Looping through all x-points
+          for i in range(n):
+            lm.fit(np.diag(w[i,:]).dot(x.reshape(-1,1)),np.diag(w[i,:]).dot(y.reshape(-1,1)))
+            yest_test[i] = lm.predict(x_new[i].reshape(-1,1))
+        return yest_test
+```
 
 
 
