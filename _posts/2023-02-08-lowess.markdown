@@ -9,6 +9,8 @@ usemathjax: true
 
 ![Image credit to Suraj Verma.](https://miro.medium.com/max/1400/1*H3QS05Q1GJtY-tiBL00iug.webp)
 
+Image credit: Suraj Verma
+
 ## Concept
 
 Locally weighted linear regression (LOWESS) is a method for modeling nonlinear 
@@ -57,6 +59,7 @@ it cannot directly be applied to non-linear trends, like in the image below.  So
 to apply this equation to nonlinear data, we are going to draw some ideas from calculus.
 
 ![Image credit to Rahul Yedida (2018). ](https://beginningwithml.files.wordpress.com/2018/07/2-e1530546876638.png)
+
 Image credit: Rahul Yedida
 
 
@@ -70,6 +73,7 @@ linear models. This way, when you are making a prediction for a new observation,
 localize the problem to a smaller neighborhood of the data: 
 
 ![Image credit to Rahul Yedida (2018).](https://beginningwithml.files.wordpress.com/2018/07/3.png)
+
 Image credit: Rahul Yedida
 
 
@@ -84,6 +88,7 @@ us a matrix of weights composed of the weights vectors for each point.
 The kernel width is defined by a hyperparameter called tau, $$\tau$$:
 
 ![Image credit to David Cohn](https://www.cs.cmu.edu/afs/cs/project/jair/pub/volume4/cohn96a-html/img160.gif)
+
 Image credit: David Cohn
 
 Here are some examples of kernel functions that may be used:
@@ -252,6 +257,4 @@ class Lowess:
         return yest_test
 {% endhighlight %}
 
-
-
-
+## That's all!
