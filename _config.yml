@@ -1,13 +1,12 @@
-title: DATA 441
-author: Katherine Hunter
-  name: kehunter
-  email: kehunter@wm.edu
+title: "DATA 441"
+author: "Katherine Hunter"
+  name: "kehunter"
+  email: "kehunter@wm.edu"
 
 # The `>` after `description:` means to ignore line-breaks until next key.
 # If you want to omit the line-break after the end of text, use `>-` instead.
 description: >
-  This is a website for my projects and research as a part of the >
-  Advanced Applied Machine Learning course at William & Mary (Spring 2023).
+  This is a website for my projects and research as a part of the Advanced Applied Machine Learning course at William & Mary (Spring 2023).
 
 # Build settings
 
