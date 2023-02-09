@@ -1,13 +1,16 @@
 ---
 layout: post
-title:  "Intro to Locally Weighted Linear Regression"
+title:  "Intro to Locally Weighted Linear Regression (LOWESS)"
 date:   2023-02-08 09:26:54 -0500
 categories: jekyll update
 permalink: /lowess/
 usemathjax: true
 ---
 
-## What is Locally Weighted Linear Regression?
+## Concept
+
+Locally weighted linear regression (LOWESS) is a method for modeling nonlinear 
+data.  LOWESS can be explained by breaking its name down into its component parts:
 
 ### "Linear Regression" 
 
@@ -25,28 +28,31 @@ from the predicted y values
 - $$\epsilon \rightarrow$$ random error 
 
 
-In order to calculate the $\beta$ coefficients, we must solve for $\beta$. To get our 
+In order to calculate the $$\beta$$ coefficients, we must solve for $$\beta$$. To get our 
 matrix of features on the other side of the equation, we will have to multiply by its 
 inverse which is only possible if the matrix is invertible, and necessarily square. 
 Multiplying X by its transpose will make it into a (likely) invertible square matrix: 
 
 $$\large  X^Ty = X^TX\beta +\sigma X^T\epsilon$$
 
-And after checking that $X^TX$ is invertible, we can solve for $\beta$:
+And after checking that $$X^TX$$ is invertible, we can solve for $$\beta$$:
 
 $$\large \beta = (X^TX)^{-1}(X^Ty) - \sigma (X^TX)^{-1}X^T\epsilon$$
 
-We can never truly know the random error term, so we take an estimate:
+We can never truly know the random error term, but we know that the mean of $$\epsilon$$ is 0:
 
 $$\large \bar{\beta} = (X^TX)^{-1}(X^Ty)$$
 
-Finally, we can plug in our estimated $\beta$ coefficients and obtain 
+Finally, we can plug in our estimated $$\beta$$ coefficients and obtain 
 our linear regression equation to use for predictions:
 
 $$\large \hat{y} = X(X^TX)^{-1}(X^Ty)$$
 
+This equation will be used in our LOWESS implementation. 
+
 Linear regression can be a great method for modeling and predicting linear data, but 
-it cannot directly be applied to non-linear trends, like in the image below:
+it cannot directly be applied to non-linear trends, like in the image below.  So in order
+to apply this equation to nonlinear data, we are going to draw some ideas from calculus.
 
 ![Image credit to Rahul Yedida (2018). ](https://beginningwithml.files.wordpress.com/2018/07/2-e1530546876638.png)
 
@@ -54,7 +60,7 @@ it cannot directly be applied to non-linear trends, like in the image below:
 
 ### "Locally"
 
-If you tried to draw a single line through that data, the predictions would be very poor. 
+If you tried to draw a single line through the data above, the predictions would be very poor. 
 However, if you break the data up into smaller segments/datasets, you can apply 
 linear regression to these miniature datasets and draw a linear regression line for each one.
 This calculus-like approach approximates the true curve of the line with multiple small, 
@@ -71,9 +77,9 @@ So how do we localize the data? We use what is known as a **kernel function** wh
 data point a **weight** based on how far that point is from a central point. The kernel looks like 
 a bell-shaped curve, so that points that fall outside of the scope of the kernel receive a value of 0.
 For LOWESS, each point that we are trying to predict will be the center point for the kernel, giving
-us a matrix of weights. 
+us a matrix of weights composed of the weights vectors for each point. 
 
-The kernel width is defined by a hyperparameter called tau, $\tau$:
+The kernel width is defined by a hyperparameter called tau, $$\tau$$:
 
 ![Image credit to David Cohn](https://www.cs.cmu.edu/afs/cs/project/jair/pub/volume4/cohn96a-html/img160.gif)
 
