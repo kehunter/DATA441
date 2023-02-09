@@ -6,7 +6,7 @@ author: Katherine Hunter
 # The `>` after `description:` means to ignore line-breaks until next key.
 # If you want to omit the line-break after the end of text, use `>-` instead.
 description: >
-  This is a website for my projects and research as a part of the 
+  This is a website for my projects and research as a part of the >
   Advanced Applied Machine Learning course at William & Mary (Spring 2023).
 
 # Build settings
