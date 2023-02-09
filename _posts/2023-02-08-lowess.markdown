@@ -215,7 +215,7 @@ def lowess(x, y,x_new, kern, tau=0.05): # x_new should be the testing data
 Using randomly-generated noisy sin data, we can test our function and generate
 the following plot: 
 
-![](/assets/images/plot.png)
+![](../assets/images/plot.png)
 
 
 ### Creating a LOWESS Class
