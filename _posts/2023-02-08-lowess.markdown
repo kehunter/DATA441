@@ -7,6 +7,8 @@ permalink: /lowess/
 usemathjax: true
 ---
 
+![Image credit to Suraj Verma.](https://miro.medium.com/max/1400/1*H3QS05Q1GJtY-tiBL00iug.webp)
+
 ## Concept
 
 Locally weighted linear regression (LOWESS) is a method for modeling nonlinear 
@@ -55,7 +57,7 @@ it cannot directly be applied to non-linear trends, like in the image below.  So
 to apply this equation to nonlinear data, we are going to draw some ideas from calculus.
 
 ![Image credit to Rahul Yedida (2018). ](https://beginningwithml.files.wordpress.com/2018/07/2-e1530546876638.png)
-
+Image credit: Rahul Yedida
 
 
 ### "Locally"
@@ -68,7 +70,7 @@ linear models. This way, when you are making a prediction for a new observation,
 localize the problem to a smaller neighborhood of the data: 
 
 ![Image credit to Rahul Yedida (2018).](https://beginningwithml.files.wordpress.com/2018/07/3.png)
-
+Image credit: Rahul Yedida
 
 
 ### "Weighted" 
@@ -82,6 +84,7 @@ us a matrix of weights composed of the weights vectors for each point.
 The kernel width is defined by a hyperparameter called tau, $$\tau$$:
 
 ![Image credit to David Cohn](https://www.cs.cmu.edu/afs/cs/project/jair/pub/volume4/cohn96a-html/img160.gif)
+Image credit: David Cohn
 
 Here are some examples of kernel functions that may be used:
 
@@ -98,10 +101,14 @@ $$ K(x):=\begin{cases}(1-\|x\|^3)^3 \;\;\;if \;\;\; \|x\|<1 \\0 \;\;\; \text{oth
 
 $$ K(x):=\begin{cases}\frac{3}{4}(1-\|x\|^2) \;\;\;if \;\;\; \|x\|<1 \\0 \;\;\; \text{otherwise}\end{cases}$$
 
-3.   The Quartic Kernel
+4.   The Quartic Kernel
 
 $$ K(x):=\begin{cases}\frac{15}{16}(1-\|x\|^2)^2 \;\;\;if \;\;\; \|x\|<1 \\0 \;\;\; \text{otherwise}\end{cases}$$
 
+A variety of other kernels may be used as well:
+
+![](https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Kernels.svg/1000px-Kernels.svg.png)
+Photo credit: Wikipedia
 
 ## Code implementations
 
@@ -150,8 +157,8 @@ def kernel_function(xi,x0,kern, tau):
 
 ### Define the weights function
 
-Since we are going to be generating regression lines from 
-multiple point, our weights will take the form of a weights 
+Again, since we are going to be generating regression lines from 
+multiple points, our weights will take the form of a weights 
 matrix, where each column vector represents the weights 
 calculated based on a given point: 
 
@@ -169,6 +176,12 @@ def weights_matrix(x,x_new,kern,tau):
 {% endhighlight %}
 
 ### Basic LOWESS function
+
+This function is designed to be trained by one set of data, 
+and to predict another.  It works by centering the kernel at 
+each new data point and producing weights based on the old data, 
+creating n weights vectors and n linear regression models 
+if there are n new data points. 
 
 {% highlight ruby %}
 
@@ -192,12 +205,6 @@ def lowess(x, y,x_new, kern, tau=0.05): # x_new should be the testing data
     return yest
 {% endhighlight %}
 
-This function is designed to be trained by one set of data, 
-and to predict another.  It works by centering the kernel at 
-each new data point and producing weights based on the old data, 
-creating n weights vectors and n linear regression models 
-if there are n new data points. 
-
 
 ### Example 
 Using randomly-generated noisy sin data, we can test our function and generate
@@ -207,6 +214,9 @@ the following plot:
 
 
 ### Creating a LOWESS Class
+
+In order to make the function compatible with Sci-Kit Learn, particularly
+to tune hyperparameters with Grid-Search CV, it is good to create a LOWESS class.
 
 {% highlight ruby %}
 # creating your own regressor:
@@ -242,11 +252,6 @@ class Lowess:
         return yest_test
 {% endhighlight %}
 
-
-
-
-
-<!--- ![Image credit to Suraj Verma.](https://miro.medium.com/max/1400/1*H3QS05Q1GJtY-tiBL00iug.webp)  ---> 
 
 
 
