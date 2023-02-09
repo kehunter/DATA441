@@ -213,16 +213,19 @@ def lowess(x, y,x_new, kern, tau=0.05): # x_new should be the testing data
 
 ### Example 
 Using randomly-generated noisy sin data, we can test our function. 
+
 {% highlight ruby %}
-#Initializing noisy non linear data
+
+\#Initializing noisy non linear data
 x = np.linspace(0,4,201)
 noise = np.random.normal(loc = 0, scale = .2, size = len(x))
-y = np.sin(x**2 * 1.5 * np.pi ) 
+y = np.sin(x\*\*2 \* 1.5 \* np.pi) 
 ynoisy = y + noise
-# test the regressor
+\# test the regressor
 lowess(x,ynoisy,0.78,Epanechnikov,tau=0.009)
-# test the function without test data, just the train
+\# test the function without test data, just the train
 yest = lowess(x,ynoisy,x,Epanechnikov,0.03)
+
 {% endhighlight %}
 
 Plotting the results, we see that the LOWESS method models the true sin curve very well: 
