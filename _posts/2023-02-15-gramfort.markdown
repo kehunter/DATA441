@@ -1,0 +1,120 @@
+---
+layout: post
+title:  "Gramfort's Lowess Approach"
+date:   2023-02-15 09:26:54 -0500
+categories: projects
+permalink: 
+usemathjax: true
+---
+
+Alex Gramfort created his own approach for applying locally weighted linear regression (source code found [here](https://gist.github.com/agramfort/850437)).  
+
+Let's take a look at his function: 
+{% highlight ruby %}
+from math import ceil
+import numpy as np
+from scipy import linalg
+
+
+def lowess(x, y, f=2. / 3., iter=3):
+    """lowess(x, y, f=2./3., iter=3) -> yest
+    Lowess smoother: Robust locally weighted regression.
+    The lowess function fits a nonparametric regression curve to a scatterplot.
+    The arrays x and y contain an equal number of elements; each pair
+    (x[i], y[i]) defines a data point in the scatterplot. The function returns
+    the estimated (smooth) values of y.
+    The smoothing span is given by f. A larger value for f will result in a
+    smoother curve. The number of robustifying iterations is given by iter. The
+    function will run faster with a smaller number of iterations.
+    """
+    n = len(x)
+    r = int(ceil(f * n))
+    h = [np.sort(np.abs(x - x[i]))[r] for i in range(n)]
+    w = np.clip(np.abs((x[:, None] - x[None, :]) / h), 0.0, 1.0)
+    w = (1 - w ** 3) ** 3
+    yest = np.zeros(n)
+    delta = np.ones(n)
+    for iteration in range(iter):
+        for i in range(n):
+            weights = delta * w[:, i]
+            b = np.array([np.sum(weights * y), np.sum(weights * y * x)])
+            A = np.array([[np.sum(weights), np.sum(weights * x)],
+                          [np.sum(weights * x), np.sum(weights * x * x)]])
+            beta = linalg.solve(A, b)
+            yest[i] = beta[0] + beta[1] * x[i]
+
+        residuals = y - yest
+        s = np.median(np.abs(residuals))
+        delta = np.clip(residuals / (6.0 * s), -1, 1)
+        delta = (1 - delta ** 2) ** 2
+
+    return yest
+{% endhighlight %}
+
+### Some key things to notice:
+
+1. The parameter, **f**, essentially defines the width of the 
+neighborhood of a given value. 
+2. The linear regressions are computed multiple times (according 
+to the parameter **iter**), so that for each subsequent round of 
+calculations, the values with the highest residuals (i.e. the outliers)
+are excluded, allowing the curve to become smoother. 
+
+### A walkthrough of the function
+
+{% highlight ruby %}
+# number of observations
+n = len(x)
+{% endhighlight %}
+
+Throughout the function, we will be looking at one observation
+at a time, and for each one we will:
+- Define its neighborhood by finding the points that are closest in 
+vicinity (using its Euclidean distance from all other points)
+and using f to restrict the neighborhood.  
+- Create weights that correspond to that one value.  The 
+weights will scale all the other observations, so the dimensions
+of the weights for 1 observation is the same as the dimensions of X. 
+- Create a linear regression model using the weights from that observation.
+
+$$\;$$
+{% highlight ruby %}
+# get index of furthest neighbor
+r = int(ceil(f * n))
+{% endhighlight %}
+
+Say we leave **f** at its default value, $$\frac{2}{3}$$.  This 
+line will get the index at the $$f^{th}$$, or $$\frac{2}{3}^{rd}$$, mark in the data.
+For example, if we have $$100$$ observations, then **r** would be
+calculated to be $$67$$. 
+
+$$\;$$
+{% highlight ruby %}
+# get distance from furthest neighbor for each observation
+h = [np.sort(np.abs(x - x[i]))[r] for i in range(n)] # [n]
+{% endhighlight %}
+For each observation, this line 1) calculates the distance between
+the observation and all other observations, 2) gets the $$r^{th}$$
+value among these distances (or its distance from its furthest neighbor)
+, and puts them all in a list of size n. 
+
+
+
+
+
+$$\;$$
+{% highlight ruby %}
+w = np.clip(np.abs((x[:, None] - x[None, :]) / h), 0.0, 1.0)
+w = (1 - w ** 3) ** 3
+{% endhighlight %}
+
+$$\;$$
+{% highlight ruby %}
+yest = np.zeros(n)
+delta = np.ones(n)
+{% endhighlight %}
+
+$$\;$$
+{% highlight ruby %}
+
+{% endhighlight %}
