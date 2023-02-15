@@ -96,7 +96,10 @@ h = [np.sort(np.abs(x - x[i]))[r] for i in range(n)] # [n]
 For each observation, this line 1) calculates the distance between
 the observation and all other observations, 2) gets the $$r^{th}$$
 value among these distances (or its distance from its furthest neighbor)
-, and puts them all in a list of size n. 
+, and puts them all in a list of size n. The distances between
+observation[i] and all other observations will later be divided by
+ $$h[i]$$, so that values closer to observation[i] will be closer 
+ to 0, and values outside of the neighborhood will be 1. 
 
 
 
@@ -107,14 +110,97 @@ $$\;$$
 w = np.clip(np.abs((x[:, None] - x[None, :]) / h), 0.0, 1.0)
 w = (1 - w ** 3) ** 3
 {% endhighlight %}
+In this line, ```x[:, None] - x[None, :]``` again calculates the pairwise
+distances (which is why the absolute value function is applied), and 
+each pairwise distance from observation[i] will be divided by its
+corresponding distance from its furthest neighbor h.  
+
+Then, all values
+are clipped to be between 0 and 1.  This means that
+values close to observation[i] will be zero, and all values outside of 
+the neighborhood of observation[i] are 1.  This produces a matrix of weights
+of size $$[n,n]$$, because you have a vector of size $$n$$ to define the
+neighborhood of observation[i], and you have $$n$$ observations requiring 
+$$n$$ vectors of weights.  
+
+For multi-dimensional data, these weights 
+will have to be matrices, so you will end up with a weights matrix with 
+dimensions $$[n,n,p]$$ where $$p$$ is the number of features.
+
+The line ```w = (1 - w ** 3) ** 3``` simply applies the tricubic kernel
+function to the weights. In a sense, this 'flips' the numbers so that 0s 
+become 1s and vice versa.  i.e. closer to 1 means closer to the central 
+observation.
+
 
 $$\;$$
 {% highlight ruby %}
+# initialize vector for predictions
 yest = np.zeros(n)
+# initialize vector for smoothing curve
 delta = np.ones(n)
 {% endhighlight %}
 
+
+
+
+
+
+
 $$\;$$
 {% highlight ruby %}
-
+for iteration in range(iter):
 {% endhighlight %}
+The remainder of the function (before the return statement) is 
+nested below this call for iteration. Each time the rest of the 
+code runs, there is the potential for the influence of some 
+values to be decreased in order to reduce the residuals and
+smooth out the curve. 
+
+
+$$\;$$
+{% highlight ruby %}
+for i in range(n):
+    weights = delta * w[:, i]
+    b = np.array([np.sum(weights * y), np.sum(weights * y * x)])
+    A = np.array([[np.sum(weights), np.sum(weights * x)],
+                    [np.sum(weights * x), np.sum(weights * x * x)]])
+    beta = linalg.solve(A, b)
+    yest[i] = beta[0] + beta[1] * x[i]
+{% endhighlight %}
+For each observation, a linear regression equation is solved.  
+First, the weights are reweighted by delta: ```weights = delta * w[:, i]```.
+In the first iteration, this line does nothing because all values of 
+delta are 1. 
+
+The following three lines apply the weights to the observations and
+dependent variables, then solve a system of equations to produce
+a linear regression model.  The line ```yest[i] = beta[0] + beta[1] * x[i]```
+applies the model to the prediction of the dependent variable 
+with obervation$$[i]$$ as input, and adds it to the $$yest$$ vector.
+
+
+$$\;$$
+{% highlight ruby %}
+residuals = y - yest
+s = np.median(np.abs(residuals))
+delta = np.clip(residuals / (6.0 * s), -1, 1)
+delta = (1 - delta ** 2) ** 2
+{% endhighlight %}
+This is the robustifying/smoothing part of the algorithm.  The median
+value of the residuals are calculated.  The line
+```np.clip(residuals / (6.0 * s), -1, 1)``` essentially 
+makes outliers (with high residuals) have delta values
+of -1 or 1, so that the function in the next line flips
+the delta values of outliers of zero.  This means that
+future iterations of the linear regression model do 
+not consider outliers. 
+
+
+$$\;$$
+{% highlight ruby %}
+return yest
+{% endhighlight %}
+The predictions for all observations are returned. 
+
+## Multi-dimensional data: my adapted approach
