@@ -203,4 +203,25 @@ return yest
 {% endhighlight %}
 The predictions for all observations are returned. 
 
-## Multi-dimensional data: my adapted approach
+## My adaptations
+
+### Goals
+
+1. Accommodate multidimensional features
+2. Accommodate train and test sets
+3. Create SciKitLearn-compliant version
+4. Test with k-Fold cross-validations and GridSearchCV
+
+### Conceptual changes
+
+To allow multidimensional features, any calculation of the distances 
+in the code which simply subtracts features and take the absolute
+value will have to be replaced with the calculation of Euclidean distance. 
+
+Assuming that the data is scaled, weights will now be multiplied to 
+observation vectors of multiple values.  
+
+To solve the linear regression equation, it will be easier to use 
+SciKitLearn's LinearRegression function which works with multi-dimensional
+data.  This will make it easier to encorporate testing data, as 
+it only requires calling the predict method. 
