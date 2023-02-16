@@ -225,3 +225,54 @@ To solve the linear regression equation, it will be easier to use
 SciKitLearn's LinearRegression function which works with multi-dimensional
 data.  This will make it easier to encorporate testing data, as 
 it only requires calling the predict method. 
+
+
+{% highlight ruby %}
+def lowess_ag(x, y, x_new, f=2. / 3., iter=3):
+    n = len(x)
+    new = len(x_new) ##
+    r = int(ceil(f * n))
+
+    if len(x.shape)==1: # 1D data
+      h = [np.sort(np.abs(x - x_new[i]))[r] for i in range(new)] 
+      w = np.clip(np.array([abs(x-x_new[i])/h for i in range(new)]), 0.0, 1.0)
+    else:
+      h = [np.sort(np.sqrt(np.sum((x - x_new[i])**2,axis=1)))[r] for i in range(new)]
+      w = np.clip(np.array([np.sqrt(np.sum((x - x_new[i])**2, axis=1))/h[i] for i in range(new)]), 0.0, 1.0) 
+      
+
+    w = (1 - w ** 3) ** 3
+
+    #########################
+    yest = np.zeros(new)
+    delta = np.ones(n)
+
+
+    for iteration in range(iter):
+      if np.isscalar(x_new): # x_new is a scaler
+        weights = delta * w
+        lm.fit(np.diag(weights).dot(x.reshape(-1,1)),np.diag(weights).dot(y.reshape(-1,1)))
+        yest = lm.predict([[x_new]])[0][0]
+
+      elif len(x.shape)==1: # 1D data
+            for i in range(new):
+                weights = delta * w[:, i]
+                b = np.array([np.sum(weights * y), np.sum(weights * y * x)])
+                A = np.array([[np.sum(weights), np.sum(weights * x)],
+                              [np.sum(weights * x), np.sum(weights * x * x)]])
+                beta = linalg.solve(A, b)
+                yest[i] = beta[0] + beta[1] * x[i]
+
+      else: # multi-D data
+            for i in range(new):
+                weights = delta * w[i]
+                lm.fit(np.diag(weights).dot(x),np.diag(weights).dot(y.reshape(-1,1)))
+                yest[i] = lm.predict(x_new[i].reshape(1,-1))
+
+      residuals = np.sqrt(np.sum((y - yest)**2))
+      s = np.median(np.abs(residuals))
+      delta = np.clip(residuals / (6.0 * s), -1, 1)
+      delta = (1 - delta ** 2) ** 2
+
+    return yest
+{% endhighlight %}
