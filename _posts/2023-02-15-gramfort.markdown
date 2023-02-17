@@ -332,8 +332,6 @@ or the weight and engine details.
 Modeling miles per gallon only according to weight gave the following model using
 the default hyperparameters (with a random forest model for comparison):
 
-![](../../../assets/images/gramfort/cars_plot.png)
-
 ![]({{site.baseurl}}/assets/images/gramfort/cars_plot.png)
 
 
