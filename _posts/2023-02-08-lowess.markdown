@@ -230,7 +230,7 @@ yest = lowess(x,ynoisy,x,Epanechnikov,0.03)
 
 Plotting the results, we see that the LOWESS method models the true sin curve very well: 
 
-![](../assets/images/plot.png)
+![](../assets/images/lowess/plot.png)
 
 
 

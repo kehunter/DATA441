@@ -327,13 +327,15 @@ I will model the miles per gallon of a given car using either the weight as a pr
 or the weight and engine details.  
 
 ![](../assets/images/cars_data.png)
-<img src="../assets/images/cars_data.png" alt="">
 
 
 Modeling miles per gallon only according to weight gave the following model using
 the default hyperparameters (with a random forest model for comparison):
+
 ![](../assets/images/cars_plot.png)
-<img src="../assets/images/cars_plot.png" alt="">
+
+![]({{site.baseurl}}/assets/images/cars_plot.png)
+
 
 Here is the code for my KFold Cross validation setup:
 
