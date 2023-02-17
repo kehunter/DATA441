@@ -326,15 +326,15 @@ I am using a cars dataset with 392 observations to perform testing on the functi
 I will model the miles per gallon of a given car using either the weight as a predictor
 or the weight and engine details.  
 
-![](../assets/images/cars_data.png)
+![](../../../../assets/images/gramfort/cars_data.png)
 
 
 Modeling miles per gallon only according to weight gave the following model using
 the default hyperparameters (with a random forest model for comparison):
 
-![](../assets/images/cars_plot.png)
+![](../../../assets/images/gramfort/cars_plot.png)
 
-![]({{site.baseurl}}/assets/images/cars_plot.png)
+![]({{site.baseurl}}/assets/images/gramfort/cars_plot.png)
 
 
 Here is the code for my KFold Cross validation setup:
