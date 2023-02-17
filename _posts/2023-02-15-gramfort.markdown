@@ -10,7 +10,7 @@ usemathjax: true
 Alex Gramfort created his own approach for applying locally weighted linear regression (source code found [here](https://gist.github.com/agramfort/850437)).  
 
 Let's take a look at his function: 
-{% highlight ruby %}
+{% highlight python %}
 from math import ceil
 import numpy as np
 from scipy import linalg
@@ -62,7 +62,7 @@ are excluded, allowing the curve to become smoother.
 
 ### A walkthrough of the function
 
-{% highlight ruby %}
+{% highlight python %}
 # number of observations
 n = len(x)
 {% endhighlight %}
@@ -78,7 +78,7 @@ of the weights for 1 observation is the same as the dimensions of X.
 - Create a linear regression model using the weights from that observation.
 
 $$\;$$
-{% highlight ruby %}
+{% highlight python %}
 # get index of furthest neighbor
 r = int(ceil(f * n))
 {% endhighlight %}
@@ -89,7 +89,7 @@ For example, if we have $$100$$ observations, then **r** would be
 calculated to be $$67$$. 
 
 $$\;$$
-{% highlight ruby %}
+{% highlight python %}
 # get distance from furthest neighbor for each observation
 h = [np.sort(np.abs(x - x[i]))[r] for i in range(n)] # [n]
 {% endhighlight %}
@@ -106,7 +106,7 @@ observation[i] and all other observations will later be divided by
 
 
 $$\;$$
-{% highlight ruby %}
+{% highlight python %}
 w = np.clip(np.abs((x[:, None] - x[None, :]) / h), 0.0, 1.0)
 w = (1 - w ** 3) ** 3
 {% endhighlight %}
@@ -134,7 +134,7 @@ observation.
 
 
 $$\;$$
-{% highlight ruby %}
+{% highlight python %}
 # initialize vector for predictions
 yest = np.zeros(n)
 # initialize vector for smoothing curve
@@ -148,7 +148,7 @@ delta = np.ones(n)
 
 
 $$\;$$
-{% highlight ruby %}
+{% highlight python %}
 for iteration in range(iter):
 {% endhighlight %}
 The remainder of the function (before the return statement) is 
@@ -159,7 +159,7 @@ smooth out the curve.
 
 
 $$\;$$
-{% highlight ruby %}
+{% highlight python %}
 for i in range(n):
     weights = delta * w[:, i]
     b = np.array([np.sum(weights * y), np.sum(weights * y * x)])
@@ -181,7 +181,7 @@ with obervation$$[i]$$ as input, and adds it to the $$yest$$ vector.
 
 
 $$\;$$
-{% highlight ruby %}
+{% highlight python %}
 residuals = y - yest
 s = np.median(np.abs(residuals))
 delta = np.clip(residuals / (6.0 * s), -1, 1)
@@ -198,7 +198,7 @@ not consider outliers.
 
 
 $$\;$$
-{% highlight ruby %}
+{% highlight python %}
 return yest
 {% endhighlight %}
 The predictions for all observations are returned. 
@@ -227,52 +227,61 @@ data.  This will make it easier to encorporate testing data, as
 it only requires calling the predict method. 
 
 
-{% highlight ruby %}
-def lowess_ag(x, y, x_new, f=2. / 3., iter=3):
+### Modified Gramfort's
+
+
+{% highlight python %}
+def lowess_ag(x, y, xnew, f=2. / 3., iter=3):
     n = len(x)
-    new = len(x_new) ##
+    new = len(xnew) 
     r = int(ceil(f * n))
 
-    if len(x.shape)==1: # 1D data
-      h = [np.sort(np.abs(x - x_new[i]))[r] for i in range(new)] 
-      w = np.clip(np.array([abs(x-x_new[i])/h for i in range(new)]), 0.0, 1.0)
-    else:
-      h = [np.sort(np.sqrt(np.sum((x - x_new[i])**2,axis=1)))[r] for i in range(new)]
-      w = np.clip(np.array([np.sqrt(np.sum((x - x_new[i])**2, axis=1))/h[i] for i in range(new)]), 0.0, 1.0) 
-      
+    if len(y.shape)==1: # here we make column vectors
+      y = y.reshape(-1,1)
 
+    if len(x.shape)==1:
+      x = x.reshape(-1,1)
+      xnew = xnew.reshape(-1,1)
+
+    h = [np.sort(np.sqrt(np.sum((x - x[i])**2,axis=1)))[r] for i in range(n)]
+    w = np.clip(np.array([np.sqrt(np.sum((x - x[i])**2, axis=1))/h[i] for i in range(n)]), 0.0, 1.0) 
     w = (1 - w ** 3) ** 3
 
-    #########################
-    yest = np.zeros(new)
+    yest = np.zeros(n)
     delta = np.ones(n)
-
-
     for iteration in range(iter):
-      if np.isscalar(x_new): # x_new is a scaler
-        weights = delta * w
-        lm.fit(np.diag(weights).dot(x.reshape(-1,1)),np.diag(weights).dot(y.reshape(-1,1)))
-        yest = lm.predict([[x_new]])[0][0]
-
-      elif len(x.shape)==1: # 1D data
-            for i in range(new):
-                weights = delta * w[:, i]
-                b = np.array([np.sum(weights * y), np.sum(weights * y * x)])
-                A = np.array([[np.sum(weights), np.sum(weights * x)],
-                              [np.sum(weights * x), np.sum(weights * x * x)]])
-                beta = linalg.solve(A, b)
-                yest[i] = beta[0] + beta[1] * x[i]
-
-      else: # multi-D data
-            for i in range(new):
-                weights = delta * w[i]
-                lm.fit(np.diag(weights).dot(x),np.diag(weights).dot(y.reshape(-1,1)))
-                yest[i] = lm.predict(x_new[i].reshape(1,-1))
+      for i in range(n):
+          weights = delta * w[i]
+          lm.fit(np.diag(weights).dot(x),np.diag(weights).dot(y.reshape(-1,1)))
+          yest[i] = lm.predict(x[i].reshape(1,-1))
 
       residuals = np.sqrt(np.sum((y - yest)**2))
       s = np.median(np.abs(residuals))
       delta = np.clip(residuals / (6.0 * s), -1, 1)
       delta = (1 - delta ** 2) ** 2
 
-    return yest
+    if x.shape[1]==1:
+      f = interp1d(x.flatten(),yest,fill_value='extrapolate')
+      output = f(xnew)
+    else:
+      output = np.zeros(len(xnew))
+      for i in range(len(xnew)):
+        ind = np.argsort(np.sqrt(np.sum((x-xnew[i])**2,axis=1)))[:r]
+        num = min(xnew.shape[0],xnew.shape[1]) # to calc max PCs
+        if num < 3: 
+          pca = PCA(n_components=num)
+        else: 
+          pca = PCA(n_components=3)
+        x_pca = pca.fit_transform(x[ind])
+        tri = Delaunay(x_pca,qhull_options='QJ')
+        f = LinearNDInterpolator(tri,y[ind])
+        output[i] = f(pca.transform(xnew[i].reshape(1,-1))) # the output may have NaN's where the data points from xnew are outside the convex hull of X
+    if sum(np.isnan(output))>0:
+      g = NearestNDInterpolator(x,y.ravel()) 
+      # output[np.isnan(output)] = g(X[np.isnan(output)])
+      output[np.isnan(output)] = g(xnew[np.isnan(output)])
+    return output
+
 {% endhighlight %}
+
+### Conversion to SkiKitLearn Compliant Function
