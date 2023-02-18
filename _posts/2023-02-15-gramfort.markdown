@@ -403,3 +403,15 @@ Rerunning the KFold Cross-validations produced the following MSE:
 ```
 The Cross-validated Mean Squared Error for Locally Weighted Regression is : 22.226274854534292
 ```
+
+### One more kfold validation on another dataset
+
+I performed one more test of the modified function 
+using a different dataset about concrete, with 8 features. 
+Here were the results, using the default parameters: 
+```
+The Cross-validated Mean Squared Error for Locally Weighted Regression is : 7504.070632062319
+The Cross-validated Mean Squared Error for Random Forest is : 1622.2606304503267
+```
+
+This approach performed worse than random forest. 
