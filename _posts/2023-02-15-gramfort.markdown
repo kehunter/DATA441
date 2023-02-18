@@ -335,6 +335,8 @@ the default hyperparameters (with a random forest model for comparison):
 ![]({{site.baseurl}}/assets/images/gramfort/cars_plot.png)
 
 
+Then I tested to ensure that the new LOWESS function worked
+on multi-dimensional data and train/test sets (AKA new data). 
 Here is the code for my KFold Cross validation setup:
 
 {% highlight python %}
