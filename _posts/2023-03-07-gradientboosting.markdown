@@ -115,4 +115,48 @@ The Cross-Validated Mean Square Error for Random Forest is:  30.932740179473363
 ### Testing: housing dataset
 
 Finally, I will perform one more cross-validation on a dataset representing 506 houses:
-<img src="{{site.baseurl}}/assets/images/gradientdescent/housing.head.png" height = "300" width = "950">
+<img src="{{site.baseurl}}/assets/images/gradientdescent/housing.head.png" height = "300" width = "750">
+
+{% highlight python %}
+X = housing.loc[:,["industrial","nox","older"]].values
+y = housing["crime"].values
+{% endhighlight %}
+
+{% highlight python %}
+The Cross-Validated Mean Square Error for LOWESS is:  62.93571867291489
+The Cross-Validated Mean Square Error for Random Forest is:  43.940105754548306
+{% endhighlight %}
+
+
+### Testing other kernels
+
+To improve the model for a given dataset, we can use different options of kernels
+within the LOWESS function.
+I tested the Gaussian, Tricubic, Quartic, and Epanechnikov kernels for the housing 
+dataset and got the following MSEs:
+
+```
+X = housing.loc[:,["industrial","nox","older"]].values
+y = housing["crime"].values
+TTS = tts(X,y)
+Xtrain = TTS[0]
+Xtest = TTS[1]
+ytrain = TTS[2]
+ytest = TTS[3]
+results = dict()
+
+kernels = [Gaussian, Epanechnikov,Tricubic, Quartic]
+for kernel in kernels:
+  model = Lowess_AG_MD(kernel = kernel)
+  yhat = gradient_boosting(Xtrain, ytrain, Xtest, model, model)
+  results[str(kernel)] = mse(ytest, yhat)
+results
+
+{'<function Gaussian at 0x7f0cd35cd280>': 98.11231538326136,
+ '<function Epanechnikov at 0x7f0cd35cdc10>': 76.79082033945697,
+ '<function Tricubic at 0x7f0cd35cdaf0>': 76.84598324759428,
+ '<function Quartic at 0x7f0cd35cdb80>': 74.10630540196719}
+```
+
+As you can see, the Quartic kernel appeared to produce the best
+predictions for the testing data on one train/test split. 
