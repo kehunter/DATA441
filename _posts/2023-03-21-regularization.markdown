@@ -23,4 +23,6 @@ Creating the model involves finding the $\beta$ coefficients for each feature.  
 
 $$\large \beta = (X^TX)^{-1}(X^Ty)$$
 
-So in order to create the model, we *need* to have $(X^TX)^{-1}$, and we know that it is only possible to invert a matrix if that matrix is *singular*
+So in order to create the model, we *need* to have $(X^TX)^{-1}$, and to get this, $(X^TX)$ must be *invertible*.  Other ways to describe this are that $(X^TX)$ is *nonsingular*, or has a nonzero determinant, or has linearly independent columns.  
+
+One way in which the matrix of features, $X$, can lead to a non-invertible matrix is if the number of observations, $n$, is lower than the number of features, $p$.  For example, genomic datasets can contain thousands of features representing the expression of each gene in a sample, but only contain hundreds of observations or less, due to how expensive it is to sequence genetic samples.  This dataset could not be fit to an Ordinary Least Squares model. 
