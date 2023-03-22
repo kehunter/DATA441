@@ -1,13 +1,13 @@
 ---
 layout: post
-title:  "Regularization algorithms: Beyond Lasso and Ridge"
+title:  "Regularization"
 date:   2023-03-21 09:26:54 -0500
 categories: projects
 permalink: 
 usemathjax: true
 ---
 
-## **Regularization**
+## **What is Regularization?**
 Regularization is a technique that causes a model to be less sensitive to variations in the training data. It does so by minimizing the sum of a loss function (which is typically minimized when fitting a model) and a penalty function.  For example, a regression model may minimize the mean squared error but a regularized regressor would minimize the mean squared error plus some penalty on the $$\beta$$ coefficients controlled by some hyperparameter $$\alpha$$.  This helps solve problems with overfitting and linearly dependent data. 
 
 The following two equations are minimized in regularization, where $$\alpha$$ is a hyperparameter that determines how much of a penalty the coefficients will carry:
@@ -66,4 +66,14 @@ Regularization solves this issue by giving less weight to each feature and "smoo
 
 Source: [MathWorks](https://www.mathworks.com/discovery/regularization.html)
 
-### **What is regularization?**
+
+## Square Root Lasso and Smoothly Clipped Absolute Deviations (SCAD)
+
+### Scikit-Learn Implementation 
+
+### Tuning the hyperparameters
+
+### Apply to air quality dataset
+
+The source for the air quality dataset:
+Chambers, JM, Cleveland, WS, Kleiner, B & Tukey, PA (1983), Graphical Methods for Data Analysis, Wadsworth, Belmont, CA.
