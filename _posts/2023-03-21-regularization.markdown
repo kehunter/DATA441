@@ -49,6 +49,8 @@ One way in which the matrix of features, $$X$$, can lead to a non-invertible mat
 
 ![]({{site.baseurl}}/assets/images/regularization/genetic_table_eg.png)
 
+This also occurs when there are multiple correlations between the columns (multicolinearities).
+
 Regularization solves this issue by causing a slight perturbation in the matrix of features in order to make them linearly independent. 
 
 
@@ -68,6 +70,37 @@ Source: [MathWorks](https://www.mathworks.com/discovery/regularization.html)
 
 
 ## Square Root Lasso and Smoothly Clipped Absolute Deviations (SCAD)
+
+For a thorough explanation of SCAD, see [Andy Jones' blog Post](https://andrewcharlesjones.github.io/journal/scad.html) on GitHub.
+
+Some important points about SCAD:
+- the SCAD penalty function looks like LASSO but clipped edges, so that large values of $\beta$ are penalized equally rather than increasingly penalized.
+![]({{site.baseurl}}/assets/images/regularization/scad_penalty.png)
+
+- SCAD removes the bias involved in LASSO
+- SCAD is controlled by two hyperparameters, $a$ and $\lambda$
+- - $a$ determines how quickly the penalty drops off for large $\beta$s
+- - $\lambda$ is the regularization parameter which determines the height of the penalty function.
+- the penalty function contains a linear portion where $\beta \leq \lambda$, a quadratic portion where $\lambda < \beta \leq a\lambda$, and a constant portion where $\beta \geq a\lambda$
+- the penalty function is more often defined by its derivative
+
+Here is Andy Jones' implementation of the SCAD penalty and its derivative:
+
+{% highlight python %}
+def scad_penalty(beta_hat, lambda_val, a_val):
+    is_linear = (np.abs(beta_hat) <= lambda_val)
+    is_quadratic = np.logical_and(lambda_val < np.abs(beta_hat), np.abs(beta_hat) <= a_val * lambda_val)
+    is_constant = (a_val * lambda_val) < np.abs(beta_hat)
+    
+    linear_part = lambda_val * np.abs(beta_hat) * is_linear
+    quadratic_part = (2 * a_val * lambda_val * np.abs(beta_hat) - beta_hat**2 - lambda_val**2) / (2 * (a_val - 1)) * is_quadratic
+    constant_part = (lambda_val**2 * (a + 1)) / 2 * is_constant
+    return linear_part + quadratic_part + constant_part
+    
+def scad_derivative(beta_hat, lambda_val, a_val):
+    return lambda_val * ((beta_hat <= lambda_val) + (a_val * lambda_val - beta_hat)*((a_val * lambda_val - beta_hat) > 0) / ((a_val - 1) * lambda_val) * (beta_hat > lambda_val))
+
+{% endhighlight %}
 
 ### Scikit-Learn Implementation 
 
